@@ -77,7 +77,7 @@ function App() {
           <div className="flex-none h-[50vh] lg:h-auto lg:flex-[0.70] min-h-0 flex flex-col border-b lg:border-b-0 lg:border-r border-ocean-800">
             {/* Section label */}
             <div className="flex-shrink-0 flex items-center justify-between px-4 py-2 border-b border-ocean-800/50">
-              <span className="metric-label text-text-faint">
+              <span className="metric-label text-text-primary font-semibold">
                 {mode === 'LIVE' ? 'LIVE SATELLITE IMAGING' : 'HISTORICAL SATELLITE ARCHIVE'}
               </span>
               {mode === 'HISTORICAL' && (
