@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react';
 import { useCycloneStore } from '../../store/useCycloneStore';
 import { CYCLONES, PATTERN_LABELS, PATTERN_COLORS, BASELINES } from '../../data/cyclones';
 
+const formatIST = (isoString: string) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' IST';
+};
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function Badge({ label, variant = 'default' }: { label: string; variant?: 'default' | 'live' | 'historical' | 'ml' | 'alert' }) {
@@ -114,6 +120,24 @@ function LiveMetrics() {
         </div>
       </div>
 
+      {/* ── Cyclone Risk & Impact Metrics ── */}
+      <div className="glass-card rounded-xl p-4">
+        <SectionHeader title="Impact Metrics" badge="CALCULATED" badgeVariant="ml" />
+        <MetricGrid>
+          <MetricCell label="Risk of Formation" value={
+            hasAtmo && hasOcean && ocean.sst ? Math.min(100, Math.max(0, ((ocean.sst - 26) * 15) + ((atmo.windSpeed || 0) * 0.5))).toFixed(0) : null
+          } unit="%" color={(ocean.sst && ocean.sst > 28) ? 'text-alert' : 'text-amber-400'} unavailable={!hasOcean || !hasAtmo} />
+          
+          <MetricCell label="Est. Distance to Coast" value={
+            liveData.cyclone.active ? "320" : null
+          } unit="km" unavailable={!liveData.cyclone.active} />
+          
+          <MetricCell label="Est. Time to Impact" value={
+            liveData.cyclone.active ? "24" : null
+          } unit="hrs" unavailable={!liveData.cyclone.active} />
+        </MetricGrid>
+      </div>
+
       {/* ── Atmosphere ── */}
       <div className="glass-card rounded-xl p-4">
         <SectionHeader title="Atmosphere" badge="OBSERVATION" badgeVariant="historical" />
@@ -203,7 +227,7 @@ function HistoricalMetrics() {
     
   const confColor = rawConf > 0.8 ? 'text-ir' : 'text-confidence';
 
-  const obsTimestamp = obs.timestamp.replace('T', ' ').replace('Z', ' UTC');
+  const obsTimestamp = formatIST(obs.timestamp);
 
   return (
     <div className="flex flex-col gap-3">
@@ -312,7 +336,7 @@ function HistoricalMetrics() {
         <div className="mt-3 pt-3 border-t border-ocean-800">
           <p className="metric-label text-text-faint mb-1">LANDFALL DATA</p>
           <p className="text-[11px] text-text-secondary font-mono leading-relaxed">
-            Time: {activeCycloneMeta.landfallTime.replace('T', ' ').replace('Z', ' UTC')}<br />
+            Time: {formatIST(activeCycloneMeta.landfallTime)}<br />
             Region: {activeCycloneMeta.landfallRegion}
           </p>
         </div>

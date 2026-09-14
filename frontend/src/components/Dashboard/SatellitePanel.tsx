@@ -84,11 +84,17 @@ export function SatellitePanel({ onCentreClick }: { onCentreClick?: () => void }
     setLayersOpen(false);
   };
 
+  const formatIST = (isoString: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' IST';
+  };
+
   const displayTime = isLive
     ? (liveData.lastUpdated
-        ? new Date(liveData.lastUpdated).toUTCString().replace(' GMT', ' UTC')
+        ? formatIST(liveData.lastUpdated)
         : 'FETCHING...')
-    : (obs ? obs.timestamp.replace('T', ' ').replace('Z', ' UTC') : '...');
+    : (obs ? formatIST(obs.timestamp) : '...');
 
   // Track coords for fit-track action
   const trackCoords: [number, number][] = [];
@@ -271,7 +277,7 @@ export function SatellitePanel({ onCentreClick }: { onCentreClick?: () => void }
         {isLive ? (
           <div className={`glass-pill flex items-center gap-2 px-3 py-1.5 rounded-full ${
             liveData.status === 'LIVE'
-              ? 'border-ir/40 text-ir'
+              ? 'border-green-500/40 text-green-400'
               : 'border-amber-500/40 text-amber-400'
           }`}>
             <Radio size={11} className={liveData.status === 'LIVE' ? 'animate-blink' : ''} />
@@ -291,9 +297,9 @@ export function SatellitePanel({ onCentreClick }: { onCentreClick?: () => void }
           <span className="font-mono text-[10px] text-text-primary tracking-widest">
             {isLive
               ? (liveData.lastUpdated
-                  ? new Date(liveData.lastUpdated).toISOString().slice(0, 19).replace('T', ' ') + ' UTC'
+                  ? formatIST(liveData.lastUpdated)
                   : 'UPDATING...')
-              : (obs ? obs.timestamp.replace('T', ' ').replace('Z', ' UTC') : '...')}
+              : (obs ? formatIST(obs.timestamp) : '...')}
           </span>
         </div>
 

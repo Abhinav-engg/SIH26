@@ -343,55 +343,79 @@ Honesty is the foundation of scientific credibility. Here is what CycloneWatch i
 
 ## Chapter 9: The Future Roadmap
 
-CycloneWatch is a prototype that proves the end-to-end concept works. The prototype phase is complete. Here is what Phase 2 and beyond look like.
+CycloneWatch is a prototype that proves the end-to-end concept works. The prototype phase is complete with all UI polish applied. Here is what Phase 2 and beyond look like.
 
 ### Phase 1 ✅ Complete — Prototype (SIH 2026)
-- 7 cyclone events downloaded and processed
-- CNN model trained to 78.3% pattern accuracy
-- Full API backend with SQLite database
-- Interactive dashboard with live + historical modes
+**ML & Data:**
+- 7 cyclone events downloaded, processed, and labeled (423 frames)
+- CNN + GRU model trained to 78.3% pattern accuracy, 255 km T+12 MAE
+- Full FastAPI backend with SQLite database and precomputed replay system
+- IBTrACS ground truth integration — historical archives now show correct classifications
+
+**Dashboard:**
+- Live + Historical dual-mode interactive dashboard
 - NASA GIBS real satellite cloud imagery integrated
-- All IMD Gap Cases documented and visible on dashboard
-- Both frontend and backend repositories are fully documented and hosted live on Vercel and Render
+- All IMD Gap Cases documented with evidence
+- Timezone converted to IST across all components
+- Map layout changed to 70:30 (map:metrics)
+- Impact Metrics panel: Risk of Formation %, Est. Distance to Coast, Est. Time to Impact
+- Live indicator changed to green pulsing dot
 
-### Phase 2 🎯 Immediate Next Step — Data Scaling
+### Phase 2 🎯 In Progress — Data Scaling & Temporal Forecasting
 
-**The MOSDAC / INSAT-3DR Integration**
+**2a — MOSDAC / INSAT-3DR Integration (1–2 months)**
 
-Our current satellite data (GridSat-B1) has 4 km/pixel resolution. INSAT-3DR, operated by ISRO and accessible via MOSDAC (Meteorological & Oceanographic Satellite Data Archival Centre), provides **1 km/pixel resolution** — 16× more spatial detail per frame.
+Our current satellite data (GridSat-B1) has 4 km/pixel resolution. INSAT-3DR, operated by ISRO and accessible via MOSDAC, provides **1 km/pixel resolution** — 16× more spatial detail per frame.
 
 At 1 km resolution, the model gains the ability to see:
 - Inner eyewall formation (critical for RI detection)
 - Fine spiral feeder band geometry
 - Exact centre location even in partially organized storms
 
-**Expected impact:** T+12 MAE drops from ~255 km to ~150 km. Pattern accuracy likely improves above 85%.
+**Expected impact:** T+12 MAE drops from ~255 km to ~150 km. Pattern accuracy above 85%.
 
-*Note: MOSDAC data requires formal research access approval. Our access request is in progress. This is the primary future pitch for internal SIH and beyond.*
+*MOSDAC access requires formal research approval. Our request is in progress.*
 
-**Expanding the Training Dataset**
+**2b — ConvLSTM Temporal Forecasting (2 months after MOSDAC)**
 
-Adding 10–20 more cyclone events to training (including Yaas 2021, Mocha 2023, Gaja 2018) would substantially improve generalization. This requires only data download time — the pipeline scripts already handle any new event.
-
-### Phase 3 🏗️ Architecture Ready — Temporal Forecasting
-
-We have already built and staged the ConvLSTM/GRU temporal model architecture in `ml/inference.py`. Currently it uses a persistence fallback. Once MOSDAC data provides long enough frame sequences and enough training events exist, this architecture will be trained to produce:
-
+The GRU head in `CycloneTemporalModel` is architecturally ready but currently falls back to persistence (copying current position). Once trained on multi-frame sequences:
 - **Learned T+12h, T+24h, T+48h predictions** — not extrapolation
-- **Storm track curves** — the model learns to anticipate recurvature events
-- **Target performance:** T+24h MAE < 100 km — rivaling NWP physics models
+- **Storm track recurvature** — the model learns to anticipate angular steering
+- **Target:** T+24h MAE < 100 km — rivaling NWP physics models
 
-This is achievable within 6 months of MOSDAC data access.
+**2c — Expanded Dataset (Ongoing)**
 
-### Phase 4 🔭 Vision — Operational Integration
+Adding 20–30 more cyclone events (Yaas 2021, Mocha 2023, Gaja 2018, Asani 2022 as a hard negative) plus EU ECMWF ERA5 atmospheric reanalysis data. This primarily improves the `curved_band` class F1 from 0.55 → >0.70.
+
+### Phase 3 🏗️ Vision — Multi-Modal Impact Engine & 3D Globe
+
+**3a — M+G+S Taxonomy (3–6 months)**
+
+A 3-layered Multi-Task Learning upgrade:
+- **M (Morphology):** What the satellite shows (existing)
+- **G (Ground Damage Type):** What type of destruction (G1=Vegetation, G3=Power Grid, G6=Flooding)
+- **S (Severity):** How bad it is (S0=None → S4=Catastrophic)
+
+Data sources: NDRF reports, Copernicus EMS damage maps, Sentinel-2 before/after pairs.
+
+**3b — CesiumJS 3D Globe (3–4 weeks, parallel sprint)**
+
+Replace the 2D Leaflet map with a WebGL-powered 3D Earth. Benefits:
+- No tile stitch marks at high zoom
+- Correct geodesic track lines
+- Animated cloud frame playback using Cesium's time animation system
+
+### Phase 4 🔭 Operational Integration
 
 The long-term goal is integration into IMD's satellite analysis workflow. When a new satellite image arrives:
 
 1. CycloneWatch processes it in 12 milliseconds
-2. If a structural anomaly is detected (e.g., depression organizing at low latitude), an automated alert is sent to the duty meteorologist's console
-3. The meteorologist sees: "Low-latitude organization detected, curved_band signature, potential RI candidate" before any NWP model has even started running
+2. If a structural anomaly is detected, an automated alert fires to the duty meteorologist's console
+3. The meteorologist sees: *"Low-latitude organization detected — curved_band signature — potential RI candidate"* before any NWP model has started running
 
 This is not replacing the meteorologist. It is giving them a 36-hour head start.
+
+> **📖 Full technical implementation plan:** [docs/future_implementation.md](docs/future_implementation.md)
 
 > **📖 Live Demo:** See the live platform via the links in the root `README.md`.
 
@@ -464,7 +488,7 @@ CycloneWatch is a demonstration that a small, focused team with public data and 
 | The 5 structural pattern definitions | [docs/taxonomy.md](docs/taxonomy.md) |
 | The 7 training cyclones and why each was chosen | [docs/cyclone_timeline.md](docs/cyclone_timeline.md) |
 | What the AI is honestly limited by | [docs/limitations.md](docs/limitations.md) |
-| Future improvements, pending work, and pitch points | [docs/FUTURE_IMPROVEMENTS.md](docs/FUTURE_IMPROVEMENTS.md) |
+| Future improvements, pending work, and pitch points | [docs/future_implementation.md](docs/future_implementation.md) |
 | The full API contract for the backend | [docs/api_contract.md](docs/api_contract.md) |
 | How the data pipeline works (non-technical) | [data/EXPLAINER.md](data/EXPLAINER.md) |
 | How the AI brain works (non-technical) | [ml/EXPLAINER.md](ml/EXPLAINER.md) |

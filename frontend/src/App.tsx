@@ -73,8 +73,8 @@ function App() {
 
         <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-0">
 
-          {/* ── Left: Map (65%) ── */}
-          <div className="flex-none h-[50vh] lg:h-auto lg:flex-[0.65] min-h-0 flex flex-col border-b lg:border-b-0 lg:border-r border-ocean-800">
+          {/* ── Left: Map (70%) ── */}
+          <div className="flex-none h-[50vh] lg:h-auto lg:flex-[0.70] min-h-0 flex flex-col border-b lg:border-b-0 lg:border-r border-ocean-800">
             {/* Section label */}
             <div className="flex-shrink-0 flex items-center justify-between px-4 py-2 border-b border-ocean-800/50">
               <span className="metric-label text-text-faint">
@@ -97,8 +97,8 @@ function App() {
             </div>
           </div>
 
-          {/* ── Right: Metrics (35%) ── */}
-          <div className="flex-none lg:flex-[0.35] min-h-0 flex flex-col">
+          {/* ── Right: Metrics (30%) ── */}
+          <div className="flex-none lg:flex-[0.30] min-h-0 flex flex-col">
             <div className="flex-shrink-0 px-4 py-2 border-b border-ocean-800/50">
               <span className="metric-label text-text-faint">
                 {mode === 'LIVE' ? 'LIVE INTELLIGENCE' : 'HISTORICAL ANALYSIS'}

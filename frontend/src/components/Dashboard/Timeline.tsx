@@ -2,8 +2,8 @@ import { useCycloneStore } from '../../store/useCycloneStore';
 
 function formatLabel(ts: string): { date: string; time: string } {
   const d = new Date(ts);
-  const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' }).toUpperCase();
-  const time = d.toISOString().slice(11, 16) + ' UTC';
+  const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'Asia/Kolkata' }).toUpperCase();
+  const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }) + ' IST';
   return { date, time };
 }
 

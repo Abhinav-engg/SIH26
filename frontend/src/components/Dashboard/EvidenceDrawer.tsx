@@ -44,7 +44,12 @@ export function EvidenceDrawer({ open, onClose }: EvidenceDrawerProps) {
     ? step.observation_frame
     : 'live_frame';
 
-  const obsTime = obs.timestamp.replace('T', ' ').replace('Z', ' UTC');
+  const formatIST = (isoString: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' IST';
+  };
+  const obsTime = formatIST(obs.timestamp);
 
   return (
     <AnimatePresence>
