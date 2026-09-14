@@ -271,7 +271,24 @@ The current model's confidence output (`fc_confidence` head) is **not trained** 
 
 ---
 
-## 11. Minor UI Improvements Queue
+## 11. Phase 5 — Model Retraining & Impact Metric Engine
+
+**Priority:** High (Technical Debt)  
+**Estimated Timeline:** 1 week (pre-requisite for production)  
+**Expected Impact:** Live inference stops outputting "Disorganized", and Impact Metrics become mathematically accurate.
+
+### The Problem (Untrained Model Bias & Hardcoded UI)
+1. **Live Inference Bias:** Currently, if live inference is run, the backend calls `ml/inference.py`. Because the `model.pt` checkpoint hasn't been generated via a full training loop in the current environment, PyTorch defaults to an untrained model with random weights. This causes a heavy bias where it classifies almost everything as "Disorganized".
+2. **Hardcoded Metrics:** The "Distance to Coast" (320km) and "Time to Impact" (24hrs) metrics on the dashboard are currently UI placeholders for the demo phase.
+
+### The Fix
+1. **Run the Training Loop:** Execute `python -m ml.src.train` to train the CNN on the 423 labeled frames and generate a valid `model.pt` checkpoint. This will restore the 78.3% pattern accuracy for live predictions.
+2. **Geospatial Math Integration:** Replace the hardcoded UI metrics by implementing a Haversine intersection algorithm. We will load a GeoJSON of the Indian coastline and calculate the exact distance from the storm's current `[lat, lon]` to the nearest coastal boundary polygon.
+3. **Time to Impact Calculation:** Divide the exact distance to the coast by the storm's calculated movement speed vector to yield a dynamic, accurate "Time to Impact" ETA.
+
+---
+
+## 12. Minor UI Improvements Queue
 
 These are small, self-contained changes that can be implemented in 1–2 days each:
 
@@ -291,7 +308,7 @@ These are small, self-contained changes that can be implemented in 1–2 days ea
 
 ---
 
-## 12. MAE Reduction Roadmap Summary
+## 13. MAE Reduction Roadmap Summary
 
 | Phase | Change | T+12h MAE Target | Pattern Accuracy Target |
 |-------|--------|-----------------|------------------------|
